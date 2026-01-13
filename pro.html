@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="小宝记账Pro - 专业级记账理财应用">
+    <meta name="theme-color" content="#2563eb">
+    <title>小宝记账Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 80px;
+            background: #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.05);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 32px;
+            margin-bottom: 32px;
+            cursor: pointer;
+        }
+
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .nav-item {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: #64748b;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: #cbd5e1;
+        }
+
+        .nav-item.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            width: 3px;
+            height: 24px;
+            background: #2563eb;
+            border-radius: 0 3px 3px 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item.active::before {
+            opacity: 1;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 80px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .btn-success:hover {
+            background: #bbf7d0;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .content.hidden {
+            display: none;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+
+        /* 仪表板 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .stat-card.income {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .stat-card.expense {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .stat-card.balance {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: #f8fafc;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1e293b;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* 列表样式 */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item:hover {
+            background: #f8fafc;
+            padding: 16px 8px;
+            border-radius: 8px;
+        }
+
+        .list-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 16px;
+            flex-shrink: 0;
+            background: #f1f5f9;
+        }
+
+        .list-info {
+            flex: 1;
+        }
+
+        .list-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+
+        .list-desc {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .list-amount {
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 16px;
+        }
+
+        .list-amount.income {
+            color: #10b981;
+        }
+
+        .list-amount.expense {
+            color: #ef4444;
+        }
+
+        /* 标签和徽章 */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        /* 分类网格 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-item:hover {
+            border-color: #2563eb;
+            background: #f8fafc;
+        }
+
+        .category-item.selected {
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+
+        .category-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .category-name {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            color: #475569;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+
+            .header {
+                padding: 16px 24px;
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                padding: 0 16px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .logo {
+                margin-right: auto;
+                margin-bottom: 0;
+                font-size: 24px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-bottom: 60px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-width: 100%;
+            }
+        }
+
+        .type-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .type-btn {
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .type-btn.expense {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .type-btn.expense.active {
+            border-color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .type-btn.income {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .type-btn.income.active {
+            border-color: #16a34a;
+            background: #dcfce7;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #94a3b8;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #475569;
+        }
+
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="logo">💰</div>
+            <div class="nav-items">
+                <button class="nav-item active" onclick="switchPage('dashboard')" title="仪表板">📊</button>
+                <button class="nav-item" onclick="switchPage('add')" title="记账">✏️</button>
+                <button class="nav-item" onclick="switchPage('list')" title="明细">📋</button>
+                <button class="nav-item" onclick="switchPage('accounts')" title="账户">🏦</button>
+                <button class="nav-item" onclick="switchPage('budget')" title="预算">🎯</button>
+                <button class="nav-item" onclick="switchPage('report')" title="报表">📈</button>
+                <button class="nav-item" onclick="switchPage('settings')" title="设置">⚙️</button>
+            </div>
+        </div>
+
+        <!-- 主内容 -->
+        <div class="main-content">
+            <!-- 顶部栏 -->
+            <div class="header">
+                <h1 id="pageTitle">仪表板</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openAddModal()" id="addBtn" style="display:none;">
+                        <span>+</span> 记一笔
+                    </button>
+                </div>
+            </div>
+
+            <!-- 仪表板 -->
+            <div class="content" id="dashboard">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">本月收入</div>
+                        <div class="stat-value" id="monthIncomeDisplay">¥0.00</div>
+                    </div>
+                    <div class="stat-card expense">
+                        <div class="stat-label">本月支出</div>
+                        <div class="stat-value" id="monthExpenseDisplay">¥0.00</div>
+                    </div>
+                    <div class="stat-card balance">
+                        <div class="stat-label">本月结余</div>
+                        <div class="stat-value" id="monthBalanceDisplay">¥0.00</div>
+                    </div>
+                    <div class="stat-card income">
+                        <div class="stat-label">账户总资产</div>
+                        <div class="stat-value" id="totalAssetsDisplay">¥0.00</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">最近交易</div>
+                    <div id="recentTransactions"></div>
+                </div>
+            </div>
+
+            <!-- 记账页面 -->
+            <div class="content hidden" id="add">
+                <div class="card">
+                    <div class="card-title">记一笔</div>
+                    <form onsubmit="addTransaction(event)">
+                        <div class="form-group">
+                            <label class="form-label">交易类型</label>
+                            <div class="type-buttons">
+                                <button type="button" class="type-btn expense active" onclick="setTransactionType('expense')">支出</button>
+                                <button type="button" class="type-btn income" onclick="setTransactionType('income')">收入</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">金额</label>
+                            <input type="number" id="amount" placeholder="0.00" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">分类</label>
+                            <div class="category-grid" id="categoryGrid"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">账户</label>
+                            <select id="account" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">日期</label>
+                            <input type="date" id="date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">备注</label>
+                            <textarea id="note" rows="3" placeholder="添加备注..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 12px;">
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="resetForm()">重置</button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">保存交易</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 明细页面 -->
+            <div class="content hidden" id="list">
+                <div class="card">
+                    <div class="card-title">交易明细</div>
+                    <div class="tabs">
+                        <button class="tab active" onclick="filterTransactions('all')">全部</button>
+                        <button class="tab" onclick="filterTransactions('income')">收入</button>
+                        <button class="tab" onclick="filterTransactions('expense')">支出</button>
+                    </div>
+                    <div id="transactionList"></div>
+                </div>
+            </div>
+
+            <!-- 账户页面 -->
+            <div class="content hidden" id="accounts">
+                <div class="card">
+                    <div class="card-title">账户管理</div>
+                    <button class="btn btn-primary" onclick="openAccountModal()">+ 添加账户</button>
+                    <div id="accountsList" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- 预算页面 -->
+            <div class="content hidden" id="budget">
+                <div class="card">
+                    <div class="card-title">预算设置</div>
+                    <button class="btn btn-primary" onclick="openBudgetModal()">+ 设置预算</button>
+                    <div id="budgetList" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- 报表页面 -->
+            <div class="content hidden" id="report">
+                <div class="card">
+                    <div class="card-title">财务报表</div>
+                    <div class="form-group">
+                        <label class="form-label">统计周期</label>
+                        <select id="reportPeriod" onchange="updateReport()">
+                            <option value="month">本月</option>
+                            <option value="quarter">本季度</option>
+                            <option value="year">本年</option>
+                            <option value="all">全部</option>
+                        </select>
+                    </div>
+                    <div id="reportContent"></div>
+                </div>
+            </div>
+
+            <!-- 设置页面 -->
+            <div class="content hidden" id="settings">
+                <div class="card">
+                    <div class="card-title">应用设置</div>
+                    <div class="form-group">
+                        <label class="form-label">数据导出</label>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="exportData()">📤 导出为 JSON</button>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">数据导入</label>
+                        <label class="btn btn-primary" style="width: 100%; cursor: pointer;">
+                            📥 选择文件导入
+                            <input type="file" accept=".json" onchange="importData(event)" style="display: none;">
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">数据管理</label>
+                        <button class="btn btn-danger" style="width: 100%;" onclick="clearData()">🗑️ 清空所有数据</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加交易模态框 -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAddModal()">✕</button>
+            <div class="modal-header">记一笔</div>
+            <form onsubmit="addTransaction(event)">
+                <div class="form-group">
+                    <label class="form-label">交易类型</label>
+                    <div class="type-buttons">
+                        <button type="button" class="type-btn expense active" onclick="setTransactionType('expense')">支出</button>
+                        <button type="button" class="type-btn income" onclick="setTransactionType('income')">收入</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">金额</label>
+                    <input type="number" id="modalAmount" placeholder="0.00" step="0.01" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">分类</label>
+                    <div class="category-grid" id="modalCategoryGrid"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">账户</label>
+                    <select id="modalAccount" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input type="date" id="modalDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">备注</label>
+                    <textarea id="modalNote" rows="3" placeholder="添加备注..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeAddModal()">取消</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 数据存储
+        const CATEGORIES = {
+            expense: [
+                { id: 'food', name: '餐饮', icon: '🍜' },
+                { id: 'transport', name: '交通', icon: '🚗' },
+                { id: 'shopping', name: '购物', icon: '🛍️' },
+                { id: 'entertainment', name: '娱乐', icon: '🎮' },
+                { id: 'housing', name: '住房', icon: '🏠' },
+                { id: 'health', name: '医疗', icon: '⚕️' },
+                { id: 'education', name: '教育', icon: '📚' },
+                { id: 'utility', name: '水电', icon: '💡' },
+                { id: 'communication', name: '通讯', icon: '📱' },
+                { id: 'clothing', name: '服饰', icon: '👕' },
+                { id: 'fitness', name: '健身', icon: '🏋️' },
+                { id: 'travel', name: '旅游', icon: '✈️' },
+                { id: 'gifts', name: '礼物', icon: '🎁' },
+                { id: 'other', name: '其他', icon: '📦' }
+            ],
+            income: [
+                { id: 'salary', name: '工资', icon: '💼' },
+                { id: 'bonus', name: '奖金', icon: '🎉' },
+                { id: 'investment', name: '投资', icon: '📈' },
+                { id: 'parttime', name: '兼职', icon: '💻' },
+                { id: 'gift', name: '礼金', icon: '🎈' },
+                { id: 'return', name: '退款', icon: '↩️' },
+                { id: 'other', name: '其他', icon: '💵' }
+            ]
+        };
+
+        let appState = {
+            transactionType: 'expense',
+            selectedCategory: null,
+            transactions: [],
+            accounts: [
+                { id: '1', name: '现金', balance: 0, type: 'cash' },
+                { id: '2', name: '银行卡', balance: 0, type: 'card' },
+                { id: '3', name: '支付宝', balance: 0, type: 'digital' }
+            ],
+            budgets: [],
+            currentFilter: 'all'
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            initializeForms();
+            updateDashboard();
+        });
+
+        function loadData() {
+            const stored = localStorage.getItem('appData');
+            if (stored) {
+                const data = JSON.parse(stored);
+                appState = { ...appState, ...data };
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('appData', JSON.stringify(appState));
+        }
+
+        function initializeForms() {
+            document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('modalDate').valueAsDate = new Date();
+
+            renderCategories();
+            renderAccounts();
+            updateDashboard();
+        }
+
+        function renderCategories() {
+            const categories = CATEGORIES[appState.transactionType];
+            const html = categories.map(cat => `
+                <div class="category-item ${appState.selectedCategory === cat.id ? 'selected' : ''}"
+                     onclick="selectCategory('${cat.id}')">
+                    <div class="category-icon">${cat.icon}</div>
+                    <div class="category-name">${cat.name}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('categoryGrid').innerHTML = html;
+            document.getElementById('modalCategoryGrid').innerHTML = html;
+        }
+
+        function renderAccounts() {
+            const html = appState.accounts.map(acc => `
+                <option value="${acc.id}">${acc.name} (¥${acc.balance.toFixed(2)})</option>
+            `).join('');
+
+            document.getElementById('account').innerHTML = html;
+            document.getElementById('modalAccount').innerHTML = html;
+
+            renderAccountsList();
+        }
+
+        function renderAccountsList() {
+            const html = appState.accounts.map(acc => `
+                <div class="list-item">
+                    <div class="list-icon">${acc.type === 'cash' ? '💵' : acc.type === 'card' ? '💳' : '📱'}</div>
+                    <div class="list-info">
+                        <div class="list-title">${acc.name}</div>
+                        <div class="list-desc">账户余额</div>
+                    </div>
+                    <div class="list-amount income">¥${acc.balance.toFixed(2)}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('accountsList').innerHTML = html || '<div class="empty-state"><div class="empty-title">暂无账户</div></div>';
+        }
+
+        function setTransactionType(type) {
+            appState.transactionType = type;
+            appState.selectedCategory = null;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderCategories();
+        }
+
+        function selectCategory(id) {
+            appState.selectedCategory = id;
+            renderCategories();
+        }
+
+        function addTransaction(e) {
+            e.preventDefault();
+
+            const amount = parseFloat(document.getElementById('modalAmount')?.value || document.getElementById('amount').value);
+            const accountId = document.getElementById('modalAccount')?.value || document.getElementById('account').value;
+            const date = document.getElementById('modalDate')?.value || document.getElementById('date').value;
+            const note = document.getElementById('modalNote')?.value || document.getElementById('note').value;
+
+            if (!amount || !appState.selectedCategory || !accountId) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now().toString(),
+                type: appState.transactionType,
+                amount: amount,
+                categoryId: appState.selectedCategory,
+                accountId: accountId,
+                date: date,
+                note: note,
+                createdAt: new Date().toISOString()
+            };
+
+            appState.transactions.unshift(transaction);
+
+            // 更新账户余额
+            const account = appState.accounts.find(a => a.id === accountId);
+            if (account) {
+                if (appState.transactionType === 'income') {
+                    account.balance += amount;
+                } else {
+                    account.balance -= amount;
+                }
+            }
+
+            saveData();
+            closeAddModal();
+            resetForm();
+            updateDashboard();
+            renderTransactionList();
+
+            alert('记录已保存');
+        }
+
+        function resetForm() {
+            document.getElementById('amount').value = '';
+            document.getElementById('note').value = '';
+            appState.selectedCategory = null;
+            renderCategories();
+        }
+
+        function updateDashboard() {
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            let monthIncome = 0, monthExpense = 0, totalAssets = 0;
+
+            appState.transactions.forEach(t => {
+                if (t.date.startsWith(currentMonth)) {
+                    if (t.type === 'income') {
+                        monthIncome += t.amount;
+                    } else {
+                        monthExpense += t.amount;
+                    }
+                }
+            });
+
+            appState.accounts.forEach(a => {
+                totalAssets += a.balance;
+            });
+
+            document.getElementById('monthIncomeDisplay').textContent = `¥${monthIncome.toFixed(2)}`;
+            document.getElementById('monthExpenseDisplay').textContent = `¥${monthExpense.toFixed(2)}`;
+            document.getElementById('monthBalanceDisplay').textContent = `¥${(monthIncome - monthExpense).toFixed(2)}`;
+            document.getElementById('totalAssetsDisplay').textContent = `¥${totalAssets.toFixed(2)}`;
+
+            renderRecentTransactions();
+        }
+
+        function renderRecentTransactions() {
+            const recent = appState.transactions.slice(0, 5);
+            if (recent.length === 0) {
+                document.getElementById('recentTransactions').innerHTML = '<div class="empty-state"><div class="empty-title">暂无交易记录</div></div>';
+                return;
+            }
+
+            const html = recent.map(t => {
+                const cat = getCategoryById(t.categoryId);
+                return `
+                    <div class="list-item">
+                        <div class="list-icon">${cat?.icon || '❓'}</div>
+                        <div class="list-info">
+                            <div class="list-title">${cat?.name || '未知'}</div>
+                            <div class="list-desc">${t.date}</div>
+                        </div>
+                        <div class="list-amount ${t.type}">${t.type === 'income' ? '+' : '-'}¥${t.amount.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('recentTransactions').innerHTML = html;
+        }
+
+        function renderTransactionList() {
+            let transactions = appState.transactions;
+
+            if (appState.currentFilter === 'income') {
+                transactions = transactions.filter(t => t.type === 'income');
+            } else if (appState.currentFilter === 'expense') {
+                transactions = transactions.filter(t => t.type === 'expense');
+            }
+
+            if (transactions.length === 0) {
+                document.getElementById('transactionList').innerHTML = '<div class="empty-state"><div class="empty-title">暂无交易记录</div></div>';
+                return;
+            }
+
+            const html = transactions.map(t => {
+                const cat = getCategoryById(t.categoryId);
+                return `
+                    <div class="list-item">
+                        <div class="list-icon">${cat?.icon || '❓'}</div>
+                        <div class="list-info">
+                            <div class="list-title">${cat?.name || '未知'}</div>
+                            <div class="list-desc">${t.date}${t.note ? ' • ' + t.note : ''}</div>
+                        </div>
+                        <div class="list-amount ${t.type}">${t.type === 'income' ? '+' : '-'}¥${t.amount.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('transactionList').innerHTML = html;
+        }
+
+        function getCategoryById(id) {
+            for (let type in CATEGORIES) {
+                const cat = CATEGORIES[type].find(c => c.id === id);
+                if (cat) return cat;
+            }
+            return null;
+        }
+
+        function filterTransactions(filter) {
+            appState.currentFilter = filter;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderTransactionList();
+        }
+
+        function switchPage(page) {
+            document.querySelectorAll('.content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(page).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const titles = {
+                'dashboard': '仪表板',
+                'add': '记账',
+                'list': '明细',
+                'accounts': '账户',
+                'budget': '预算',
+                'report': '报表',
+                'settings': '设置'
+            };
+
+            document.getElementById('pageTitle').textContent = titles[page];
+
+            const addBtn = document.getElementById('addBtn');
+            if (page === 'add') {
+                addBtn.style.display = 'none';
+            } else {
+                addBtn.style.display = 'inline-flex';
+            }
+
+            if (page === 'list') {
+                renderTransactionList();
+            } else if (page === 'report') {
+                updateReport();
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('modalAmount').focus();
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+        }
+
+        function openAccountModal() {
+            const name = prompt('账户名称:');
+            if (name) {
+                appState.accounts.push({
+                    id: Date.now().toString(),
+                    name: name,
+                    balance: 0,
+                    type: 'other'
+                });
+                saveData();
+                renderAccounts();
+            }
+        }
+
+        function openBudgetModal() {
+            alert('预算功能即将推出');
+        }
+
+        function updateReport() {
+            const period = document.getElementById('reportPeriod').value;
+            let reportTransactions = appState.transactions;
+
+            if (period === 'month') {
+                const now = new Date();
+                const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                reportTransactions = reportTransactions.filter(t => t.date.startsWith(currentMonth));
+            }
+
+            let income = 0, expense = 0;
+            reportTransactions.forEach(t => {
+                if (t.type === 'income') {
+                    income += t.amount;
+                } else {
+                    expense += t.amount;
+                }
+            });
+
+            const html = `
+                <div style="margin-top: 20px;">
+                    <div class="list-item">
+                        <div style="flex: 1;">总收入</div>
+                        <div class="list-amount income">¥${income.toFixed(2)}</div>
+                    </div>
+                    <div class="list-item">
+                        <div style="flex: 1;">总支出</div>
+                        <div class="list-amount expense">¥${expense.toFixed(2)}</div>
+                    </div>
+                    <div class="list-item" style="border-top: 2px solid #e2e8f0; padding-top: 16px;">
+                        <div style="flex: 1; font-weight: 600;">结余</div>
+                        <div class="list-amount" style="color: ${(income - expense) >= 0 ? '#10b981' : '#ef4444'}; font-weight: 600;">¥${(income - expense).toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('reportContent').innerHTML = html;
+        }
+
+        function exportData() {
+            const data = JSON.stringify(appState, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `xiaobao-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    appState = { ...appState, ...data };
+                    saveData();
+                    location.reload();
+                } catch (error) {
+                    alert('导入失败');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearData() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复！') && confirm('再次确认删除？')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
