@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="小宝记账 - 简单好用的记账应用">
+    <meta name="theme-color" content="#3b82f6">
+    <title>小宝记账</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 200px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 60px;
+            background: white;
+            z-index: 90;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            background: white;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .content {
+            display: none;
+            padding: 16px;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #1d4ed8;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .type-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .type-btn {
+            padding: 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .type-btn.expense {
+            background: #fecaca;
+            color: #991b1b;
+            border-color: #dc2626;
+        }
+
+        .type-btn.income {
+            background: #bbf7d0;
+            color: #15803d;
+            border-color: #16a34a;
+        }
+
+        .type-btn.active {
+            border-width: 3px;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .category-btn {
+            padding: 12px 8px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .category-btn:active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .category-icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .category-name {
+            font-size: 12px;
+            color: #374151;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 12px;
+        }
+
+        .transaction-info {
+            flex: 1;
+        }
+
+        .transaction-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .transaction-note {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .transaction-amount.income {
+            color: #10b981;
+        }
+
+        .transaction-amount.expense {
+            color: #ef4444;
+        }
+
+        .date-header {
+            background: #f3f4f6;
+            padding: 12px;
+            border-bottom: 1px solid #d1d5db;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .date-stats {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .stat-small {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-box-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .stat-box-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-box-value.income {
+            color: #10b981;
+        }
+
+        .stat-box-value.expense {
+            color: #ef4444;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .category-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-item-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .category-item-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .category-item-name {
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .category-item-right {
+            text-align: right;
+        }
+
+        .category-item-amount {
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .category-item-percent {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-text {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .empty-hint {
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: flex-end;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #111827;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-label {
+            color: #6b7280;
+        }
+
+        .modal-value {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            z-index: 200;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: white;
+            font-size: 28px;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: #3b82f6;
+        }
+
+        .add-btn-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 150;
+            max-width: 480px;
+            width: 100%;
+            padding: 0 16px;
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s;
+        }
+
+        .add-btn:active {
+            background: #1d4ed8;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+        }
+
+        .form-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            align-items: flex-end;
+        }
+
+        .form-modal.active {
+            display: flex;
+        }
+
+        .form-modal-content {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            .bottom-nav {
+                max-width: 100%;
+            }
+            .add-btn-container {
+                max-width: 100%;
+            }
+        }
+
+        .period-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .period-btn {
+            padding: 10px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .period-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .setting-item {
+            background: white;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .setting-item:active {
+            background: #f3f4f6;
+        }
+
+        .setting-icon {
+            font-size: 32px;
+            margin-right: 16px;
+        }
+
+        .setting-text {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .setting-desc {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .info-section {
+            background: white;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .info-desc {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 小宝记账</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(0)">📝 明细</button>
+            <button class="tab" onclick="switchTab(1)">📊 统计</button>
+            <button class="tab" onclick="switchTab(2)">⚙️ 设置</button>
+        </div>
+
+        <main>
+            <!-- 明细页面 -->
+            <div class="content active" id="tab-0">
+                <div id="transactionList"></div>
+            </div>
+
+            <!-- 统计页面 -->
+            <div class="content" id="tab-1">
+                <div class="period-buttons">
+                    <button class="period-btn active" onclick="setPeriod('month')">按月</button>
+                    <button class="period-btn" onclick="setPeriod('year')">按年</button>
+                    <button class="period-btn" onclick="setPeriod('all')">全部</button>
+                </div>
+
+                <div id="monthSelector" style="margin-bottom: 16px;">
+                    <select id="monthSelect" style="width: 100%;" onchange="updateStatistics()">
+                    </select>
+                </div>
+
+                <div id="statisticsContent"></div>
+            </div>
+
+            <!-- 设置页面 -->
+            <div class="content" id="tab-2">
+                <div class="setting-item" onclick="exportData()">
+                    <div class="setting-icon">📤</div>
+                    <div class="setting-text">
+                        <div class="setting-title">导出数据</div>
+                        <div class="setting-desc">将数据导出为JSON文件</div>
+                    </div>
+                </div>
+
+                <label class="setting-item" style="cursor: pointer;">
+                    <div class="setting-icon">📥</div>
+                    <div class="setting-text">
+                        <div class="setting-title">导入数据</div>
+                        <div class="setting-desc">从JSON文件导入数据</div>
+                    </div>
+                    <input type="file" accept=".json" onchange="importData(event)" style="display: none;">
+                </label>
+
+                <div class="setting-item" onclick="clearAllData()">
+                    <div class="setting-icon">🗑️</div>
+                    <div class="setting-text">
+                        <div class="setting-title">清空数据</div>
+                        <div class="setting-desc">删除所有记账记录</div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-title">关于</div>
+                    <div class="info-item">
+                        <span class="info-label">应用名称</span>
+                        <span class="info-value">小宝记账</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">版本</span>
+                        <span class="info-value">1.0.0</span>
+                    </div>
+                    <div class="info-desc">
+                        小宝记账是一款简单易用的记账应用，支持收入支出记录、分类管理、统计分析等功能。所有数据保存在本地，保护您的隐私安全。
+                    </div>
+                    <div class="info-desc" style="margin-top: 12px;">
+                        💡 提示：可以将本应用添加到手机主屏幕，像原生应用一样使用。
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="switchTab(0)">📝</button>
+            <button class="nav-item" onclick="switchTab(1)">📊</button>
+            <button class="nav-item" onclick="switchTab(2)">⚙️</button>
+        </div>
+
+        <!-- 添加按钮 -->
+        <div class="add-btn-container">
+            <button class="add-btn" onclick="openAddForm()">+ 记一笔</button>
+        </div>
+    </div>
+
+    <!-- 添加交易表单 -->
+    <div class="form-modal" id="addModal">
+        <div class="form-modal-content">
+            <h2 style="margin-bottom: 16px;">记一笔</h2>
+
+            <div class="form-group">
+                <label>类型</label>
+                <div class="type-buttons">
+                    <button class="type-btn expense active" onclick="setType('expense')">支出</button>
+                    <button class="type-btn income" onclick="setType('income')">收入</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>金额</label>
+                <div style="display: flex; align-items: center; border: 2px solid #d1d5db; border-radius: 8px; padding: 12px;">
+                    <span style="font-size: 20px; font-weight: bold; margin-right: 8px;">¥</span>
+                    <input type="number" id="amount" placeholder="0.00" step="0.01" style="border: none; padding: 0; flex: 1; font-size: 24px; font-weight: bold;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>分类</label>
+                <div class="categories" id="categoryList"></div>
+            </div>
+
+            <div class="form-group">
+                <label>日期</label>
+                <input type="date" id="date" value="">
+            </div>
+
+            <div class="form-group">
+                <label>备注（选填）</label>
+                <input type="text" id="note" placeholder="添加备注...">
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" style="flex: 1;" onclick="closeAddForm()">取消</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="saveTransaction()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交易详情弹窗 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">交易详情</div>
+            <div id="detailContent"></div>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="modal-btn btn-secondary" style="flex: 1;" onclick="closeDetail()">关闭</button>
+                <button class="modal-btn btn-danger" style="flex: 1;" onclick="deleteTransaction()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据结构
+        const CATEGORIES = {
+            expense: [
+                { id: 'food', name: '餐饮', icon: '🍜' },
+                { id: 'shopping', name: '购物', icon: '🛒' },
+                { id: 'transport', name: '交通', icon: '🚗' },
+                { id: 'entertainment', name: '娱乐', icon: '🎮' },
+                { id: 'housing', name: '住房', icon: '🏠' },
+                { id: 'health', name: '医疗', icon: '💊' },
+                { id: 'education', name: '教育', icon: '📚' },
+                { id: 'communication', name: '通讯', icon: '📱' },
+                { id: 'clothing', name: '服饰', icon: '👔' },
+                { id: 'other', name: '其他', icon: '📦' }
+            ],
+            income: [
+                { id: 'salary', name: '工资', icon: '💰' },
+                { id: 'bonus', name: '奖金', icon: '🎁' },
+                { id: 'investment', name: '投资', icon: '📈' },
+                { id: 'parttime', name: '兼职', icon: '💼' },
+                { id: 'gift', name: '礼金', icon: '🧧' },
+                { id: 'other-income', name: '其他', icon: '💵' }
+            ]
+        };
+
+        // 当前表单状态
+        let formState = {
+            type: 'expense',
+            amount: '',
+            categoryId: '',
+            date: new Date().toISOString().split('T')[0],
+            note: ''
+        };
+
+        let currentPeriod = 'month';
+        let selectedTransaction = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDateInput();
+            renderCategoryButtons();
+            initializeMonthSelect();
+            loadData();
+        });
+
+        function initializeDateInput() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            formState.date = today;
+        }
+
+        function renderCategoryButtons() {
+            const container = document.getElementById('categoryList');
+            const categories = CATEGORIES[formState.type];
+            container.innerHTML = categories.map(cat => `
+                <button class="category-btn" onclick="selectCategory('${cat.id}')">
+                    <span class="category-icon">${cat.icon}</span>
+                    <span class="category-name">${cat.name}</span>
+                </button>
+            `).join('');
+        }
+
+        function setType(type) {
+            formState.type = type;
+            formState.categoryId = '';
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCategoryButtons();
+        }
+
+        function selectCategory(id) {
+            formState.categoryId = id;
+            renderCategoryButtons();
+        }
+
+        function openAddForm() {
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('amount').focus();
+        }
+
+        function closeAddForm() {
+            document.getElementById('addModal').classList.remove('active');
+            formState = {
+                type: 'expense',
+                amount: '',
+                categoryId: '',
+                date: new Date().toISOString().split('T')[0],
+                note: ''
+            };
+        }
+
+        function saveTransaction() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!amount || !formState.categoryId) {
+                alert('请填写金额和分类');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now().toString(),
+                type: formState.type,
+                amount: amount,
+                categoryId: formState.categoryId,
+                date: document.getElementById('date').value,
+                note: document.getElementById('note').value,
+                createdAt: new Date().toISOString()
+            };
+
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            transactions.unshift(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+
+            closeAddForm();
+            loadData();
+        }
+
+        function getCategory(categoryId) {
+            for (let type in CATEGORIES) {
+                const cat = CATEGORIES[type].find(c => c.id === categoryId);
+                if (cat) return cat;
+            }
+            return null;
+        }
+
+        function loadData() {
+            renderTransactionList();
+            updateStatistics();
+        }
+
+        function renderTransactionList() {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+
+            if (transactions.length === 0) {
+                document.getElementById('transactionList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div class="empty-text">暂无记账记录</div>
+                        <div class="empty-hint">点击下方按钮开始记账</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按日期分组
+            const grouped = {};
+            transactions.forEach(t => {
+                if (!grouped[t.date]) grouped[t.date] = [];
+                grouped[t.date].push(t);
+            });
+
+            const html = Object.keys(grouped).sort((a, b) => b.localeCompare(a)).map(date => {
+                const dayTransactions = grouped[date];
+                const dayIncome = dayTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+                const dayExpense = dayTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+                const dateObj = new Date(date);
+                const dateStr = dateObj.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric', weekday: 'long' });
+
+                return `
+                    <div class="date-header">
+                        <span>${dateStr}</span>
+                        <span class="date-stats">
+                            ${dayIncome > 0 ? `<span style="color: #10b981;">收 ¥${dayIncome.toFixed(2)}</span>` : ''}
+                            ${dayExpense > 0 ? `<span style="color: #ef4444;">支 ¥${dayExpense.toFixed(2)}</span>` : ''}
+                        </span>
+                    </div>
+                    ${dayTransactions.map(t => {
+                        const cat = getCategory(t.categoryId);
+                        return `
+                            <div class="transaction-item" onclick="showDetail('${t.id}')">
+                                <div class="transaction-icon" style="background-color: ${t.type === 'income' ? '#d1fae5' : '#fee2e2'};">
+                                    ${cat?.icon || '❓'}
+                                </div>
+                                <div class="transaction-info">
+                                    <div class="transaction-name">${cat?.name || '未知分类'}</div>
+                                    ${t.note ? `<div class="transaction-note">${t.note}</div>` : ''}
+                                </div>
+                                <div class="transaction-amount ${t.type}">${t.type === 'income' ? '+' : '-'}¥${t.amount.toFixed(2)}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            }).join('');
+
+            document.getElementById('transactionList').innerHTML = html;
+        }
+
+        function showDetail(id) {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            selectedTransaction = transactions.find(t => t.id === id);
+
+            if (!selectedTransaction) return;
+
+            const cat = getCategory(selectedTransaction.categoryId);
+            const dateObj = new Date(selectedTransaction.date);
+            const dateStr = dateObj.toLocaleDateString('zh-CN');
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="modal-row">
+                    <span class="modal-label">类型</span>
+                    <span class="modal-value">${selectedTransaction.type === 'income' ? '收入' : '支出'}</span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">分类</span>
+                    <span class="modal-value">${cat?.name || '未知'}</span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">金额</span>
+                    <span class="modal-value" style="color: ${selectedTransaction.type === 'income' ? '#10b981' : '#ef4444'};font-weight: bold;font-size: 18px;">¥${selectedTransaction.amount.toFixed(2)}</span>
+                </div>
+                <div class="modal-row">
+                    <span class="modal-label">日期</span>
+                    <span class="modal-value">${dateStr}</span>
+                </div>
+                ${selectedTransaction.note ? `
+                <div class="modal-row">
+                    <span class="modal-label">备注</span>
+                    <span class="modal-value">${selectedTransaction.note}</span>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailModal').classList.remove('active');
+            selectedTransaction = null;
+        }
+
+        function deleteTransaction() {
+            if (!selectedTransaction) return;
+            if (!confirm('确定要删除这条记录吗？')) return;
+
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const filtered = transactions.filter(t => t.id !== selectedTransaction.id);
+            localStorage.setItem('transactions', JSON.stringify(filtered));
+
+            closeDetail();
+            loadData();
+        }
+
+        function initializeMonthSelect() {
+            const select = document.getElementById('monthSelect');
+            const today = new Date();
+
+            for (let i = 0; i < 12; i++) {
+                const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                const value = date.toISOString().slice(0, 7);
+                const label = date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                select.appendChild(option);
+            }
+        }
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const monthSelector = document.getElementById('monthSelector');
+            monthSelector.style.display = period === 'month' ? 'block' : 'none';
+
+            updateStatistics();
+        }
+
+        function getDateRange() {
+            if (currentPeriod === 'month') {
+                const month = document.getElementById('monthSelect').value;
+                const [year, m] = month.split('-');
+                const start = new Date(year, m - 1, 1);
+                const end = new Date(year, m, 0);
+                return {
+                    start: start.toISOString().split('T')[0],
+                    end: end.toISOString().split('T')[0]
+                };
+            } else if (currentPeriod === 'year') {
+                const year = new Date().getFullYear();
+                return {
+                    start: `${year}-01-01`,
+                    end: `${year}-12-31`
+                };
+            } else {
+                return { start: '0000-01-01', end: '9999-12-31' };
+            }
+        }
+
+        function updateStatistics() {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const { start, end } = getDateRange();
+
+            const filtered = transactions.filter(t => t.date >= start && t.date <= end);
+            const income = filtered.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const expense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+            // 按分类统计
+            const categoryStats = {};
+            filtered.forEach(t => {
+                if (!categoryStats[t.categoryId]) {
+                    categoryStats[t.categoryId] = { amount: 0, type: t.type };
+                }
+                categoryStats[t.categoryId].amount += t.amount;
+            });
+
+            const expenseStats = Object.entries(categoryStats)
+                .filter(([, data]) => data.type === 'expense')
+                .map(([id, data]) => ({ id, ...data }))
+                .sort((a, b) => b.amount - a.amount);
+
+            const incomeStats = Object.entries(categoryStats)
+                .filter(([, data]) => data.type === 'income')
+                .map(([id, data]) => ({ id, ...data }))
+                .sort((a, b) => b.amount - a.amount);
+
+            let html = `
+                <div class="stat-card">
+                    <div class="stat-label">净收支</div>
+                    <div class="stat-value">¥${(income - expense).toFixed(2)}</div>
+                </div>
+
+                <div class="stat-small">
+                    <div class="stat-box">
+                        <div class="stat-box-label">总收入</div>
+                        <div class="stat-box-value income">¥${income.toFixed(2)}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">总支出</div>
+                        <div class="stat-box-value expense">¥${expense.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+
+            if (expenseStats.length > 0) {
+                html += `
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 16px;">支出分类</h3>
+                        <div class="category-list">
+                            ${expenseStats.map(stat => {
+                                const cat = getCategory(stat.id);
+                                const percent = expense > 0 ? ((stat.amount / expense) * 100).toFixed(1) : 0;
+                                return `
+                                    <div class="category-item">
+                                        <div class="category-item-left">
+                                            <div class="category-item-dot" style="background: #ef4444;"></div>
+                                            <span class="category-item-name">${cat?.name || '未知'}</span>
+                                        </div>
+                                        <div class="category-item-right">
+                                            <div class="category-item-amount">¥${stat.amount.toFixed(2)}</div>
+                                            <div class="category-item-percent">${percent}%</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (incomeStats.length > 0) {
+                html += `
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 16px;">收入分类</h3>
+                        <div class="category-list">
+                            ${incomeStats.map(stat => {
+                                const cat = getCategory(stat.id);
+                                const percent = income > 0 ? ((stat.amount / income) * 100).toFixed(1) : 0;
+                                return `
+                                    <div class="category-item">
+                                        <div class="category-item-left">
+                                            <div class="category-item-dot" style="background: #10b981;"></div>
+                                            <span class="category-item-name">${cat?.name || '未知'}</span>
+                                        </div>
+                                        <div class="category-item-right">
+                                            <div class="category-item-amount">¥${stat.amount.toFixed(2)}</div>
+                                            <div class="category-item-percent">${percent}%</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (filtered.length === 0) {
+                html += `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">暂无统计数据</div>
+                        <div class="empty-hint">开始记账后可查看统计分析</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('statisticsContent').innerHTML = html;
+        }
+
+        function switchTab(index) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`tab-${index}`).classList.add('active');
+            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.nav-item')[index].classList.add('active');
+
+            if (index === 1) {
+                updateStatistics();
+            }
+        }
+
+        function exportData() {
+            const transactions = localStorage.getItem('transactions') || '[]';
+            const blob = new Blob([transactions], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `xiaobao-accounting-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('导出成功！');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) throw new Error('格式错误');
+                    localStorage.setItem('transactions', JSON.stringify(data));
+                    loadData();
+                    alert('导入成功！');
+                } catch (error) {
+                    alert('导入失败，请检查文件格式');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (!confirm('确定要清空所有数据吗？此操作不可恢复！\n\n建议先导出数据备份。')) return;
+            if (!confirm('再次确认：真的要删除所有记账数据吗？')) return;
+
+            localStorage.removeItem('transactions');
+            loadData();
+            alert('数据已清空');
+        }
+    </script>
+</body>
+</html>
