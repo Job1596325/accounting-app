@@ -1,0 +1,65 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/add/add",
+    "pages/list/list",
+    "pages/accounts/accounts",
+    "pages/report/report",
+    "pages/settings/settings"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#1e293b",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "小宝记账",
+    "backgroundColor": "#f8fafc",
+    "backgroundTextStyle": "light",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#64748b",
+    "selectedColor": "#2563eb",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "仪表板",
+        "iconPath": "images/dashboard.png",
+        "selectedIconPath": "images/dashboard-active.png"
+      },
+      {
+        "pagePath": "pages/add/add",
+        "text": "记账",
+        "iconPath": "images/add.png",
+        "selectedIconPath": "images/add-active.png"
+      },
+      {
+        "pagePath": "pages/list/list",
+        "text": "明细",
+        "iconPath": "images/list.png",
+        "selectedIconPath": "images/list-active.png"
+      },
+      {
+        "pagePath": "pages/accounts/accounts",
+        "text": "账户",
+        "iconPath": "images/accounts.png",
+        "selectedIconPath": "images/accounts-active.png"
+      },
+      {
+        "pagePath": "pages/report/report",
+        "text": "报表",
+        "iconPath": "images/report.png",
+        "selectedIconPath": "images/report-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userInfo": {
+      "desc": "用于展示用户个人信息"
+    }
+  },
+  "cloud": true,
+  "singlePage": {
+    "navigationBarFit": "squeezed"
+  }
+}

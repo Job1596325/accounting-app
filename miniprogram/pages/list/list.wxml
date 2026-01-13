@@ -1,0 +1,51 @@
+<!--pages/list/list.wxml-->
+<view class="container">
+  <view class="content">
+    <view class="card">
+      <view class="card-title">交易明细</view>
+
+      <!-- 筛选标签页 -->
+      <view class="tabs">
+        <view
+          class="tab {{currentFilter === 'all' ? 'active' : ''}}"
+          bindtap="filterTransactions"
+          data-filter="all"
+        >
+          全部
+        </view>
+        <view
+          class="tab {{currentFilter === 'income' ? 'active' : ''}}"
+          bindtap="filterTransactions"
+          data-filter="income"
+        >
+          收入
+        </view>
+        <view
+          class="tab {{currentFilter === 'expense' ? 'active' : ''}}"
+          bindtap="filterTransactions"
+          data-filter="expense"
+        >
+          支出
+        </view>
+      </view>
+
+      <!-- 交易列表 -->
+      <block wx:if="{{transactions.length === 0}}">
+        <view class="empty-state">
+          <view class="empty-title">暂无交易记录</view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view wx:for="{{transactions}}" wx:key="id" class="list-item">
+          <view class="list-icon">{{item.icon}}</view>
+          <view class="list-info">
+            <view class="list-title">{{item.categoryName}}</view>
+            <view class="list-desc">{{item.date}}{{item.note ? ' • ' + item.note : ''}}</view>
+          </view>
+          <view class="list-amount {{item.type}}">{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>
