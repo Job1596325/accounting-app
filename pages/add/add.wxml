@@ -1,0 +1,114 @@
+<!--pages/add/add.wxml-->
+<view class="container">
+  <view class="content">
+    <view class="card">
+      <view class="card-title">记一笔</view>
+
+      <!-- 交易类型 -->
+      <view class="form-group">
+        <view class="form-label">交易类型</view>
+        <view class="type-buttons">
+          <button
+            class="type-btn expense {{transactionType === 'expense' ? 'active' : ''}}"
+            bindtap="setTransactionType"
+            data-type="expense"
+          >
+            支出
+          </button>
+          <button
+            class="type-btn income {{transactionType === 'income' ? 'active' : ''}}"
+            bindtap="setTransactionType"
+            data-type="income"
+          >
+            收入
+          </button>
+        </view>
+      </view>
+
+      <!-- 金额 -->
+      <view class="form-group">
+        <view class="form-label">金额</view>
+        <input
+          type="number"
+          placeholder="0.00"
+          bindinput="onAmountInput"
+          value="{{amount}}"
+          placeholder-style="color: #cbd5e1;"
+        />
+      </view>
+
+      <!-- 分类选择 -->
+      <view class="form-group">
+        <view class="form-label">分类</view>
+        <view class="category-grid">
+          <block wx:for="{{categories}}" wx:key="id">
+            <view
+              class="category-item {{selectedCategory === item.id ? 'selected' : ''}}"
+              bindtap="selectCategory"
+              data-id="{{item.id}}"
+            >
+              <view class="category-icon">{{item.icon}}</view>
+              <view class="category-name">{{item.name}}</view>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 账户选择 -->
+      <view class="form-group">
+        <view class="form-label">账户</view>
+        <picker
+          mode="selector"
+          value="{{accountIndex}}"
+          range="{{accountOptions}}"
+          bindchange="onAccountChange"
+        >
+          <view class="picker">{{accountOptions[accountIndex]}}</view>
+        </picker>
+      </view>
+
+      <!-- 日期 -->
+      <view class="form-group">
+        <view class="form-label">日期</view>
+        <picker
+          mode="date"
+          value="{{date}}"
+          start="2020-01-01"
+          bindchange="onDateChange"
+        >
+          <view class="picker">{{date}}</view>
+        </picker>
+      </view>
+
+      <!-- 备注 -->
+      <view class="form-group">
+        <view class="form-label">备注</view>
+        <textarea
+          placeholder="添加备注..."
+          bindinput="onNoteInput"
+          value="{{note}}"
+          placeholder-style="color: #cbd5e1;"
+          style="height: 100px;"
+        />
+      </view>
+
+      <!-- 按钮 -->
+      <view style="display: flex; gap: 12px; margin-top: 24px;">
+        <button
+          class="btn btn-secondary"
+          style="flex: 1;"
+          bindtap="resetForm"
+        >
+          重置
+        </button>
+        <button
+          class="btn btn-primary"
+          style="flex: 1;"
+          bindtap="saveTransaction"
+        >
+          保存
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

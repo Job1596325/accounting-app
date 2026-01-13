@@ -1,0 +1,64 @@
+<!--pages/report/report.wxml-->
+<view class="container">
+  <view class="content">
+    <view class="card">
+      <view class="card-title">财务报表</view>
+
+      <!-- 周期选择 -->
+      <view class="form-group">
+        <view class="form-label">统计周期</view>
+        <picker
+          mode="selector"
+          value="{{periodIndex}}"
+          range="{{periods}}"
+          bindchange="onPeriodChange"
+        >
+          <view class="picker">{{periods[periodIndex]}}</view>
+        </picker>
+      </view>
+
+      <!-- 统计数据 -->
+      <view class="report-item">
+        <view style="flex: 1;">总收入</view>
+        <view class="list-amount income">¥{{totalIncome}}</view>
+      </view>
+
+      <view class="report-item">
+        <view style="flex: 1;">总支出</view>
+        <view class="list-amount expense">¥{{totalExpense}}</view>
+      </view>
+
+      <view class="report-item divider">
+        <view style="flex: 1; font-weight: 600;">结余</view>
+        <view
+          class="list-amount"
+          style="color: {{balance >= 0 ? '#10b981' : '#ef4444'}}; font-weight: 600;"
+        >
+          ¥{{balance}}
+        </view>
+      </view>
+
+      <!-- 分类统计 -->
+      <view style="margin-top: 24px;">
+        <view class="card-title">支出分类统计</view>
+        <block wx:if="{{categoryStats.length === 0}}">
+          <view class="empty-state">
+            <view class="empty-title">暂无数据</view>
+          </view>
+        </block>
+        <block wx:else>
+          <view wx:for="{{categoryStats}}" wx:key="categoryId" class="stat-row">
+            <view class="stat-label">{{item.categoryName}}</view>
+            <view class="stat-amount">¥{{item.amount}}</view>
+            <view class="stat-bar">
+              <view
+                class="stat-bar-fill"
+                style="width: {{item.percentage}}%;"
+              ></view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</view>

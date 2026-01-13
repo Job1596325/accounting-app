@@ -1,0 +1,26 @@
+<!--pages/accounts/accounts.wxml-->
+<view class="container">
+  <view class="content">
+    <view class="card">
+      <view class="card-title">账户管理</view>
+      <button class="btn btn-primary btn-block" bindtap="showAddAccountModal">+ 添加账户</button>
+
+      <block wx:if="{{accounts.length === 0}}">
+        <view class="empty-state">
+          <view class="empty-title">暂无账户</view>
+        </view>
+      </block>
+
+      <block wx:else>
+        <view wx:for="{{accounts}}" wx:key="id" class="list-item">
+          <view class="list-icon">{{item.type === 'cash' ? '💵' : item.type === 'card' ? '💳' : '📱'}}</view>
+          <view class="list-info">
+            <view class="list-title">{{item.name}}</view>
+            <view class="list-desc">账户余额</view>
+          </view>
+          <view class="list-amount income">¥{{item.balance}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>
