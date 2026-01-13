@@ -3,41 +3,324 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: #f5f5f5;
+}
+
+.month-selector {
+  background: white;
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.month-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.month-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.month-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  border: none;
+  font-size: 14px;
+  color: #475569;
+  padding: 0;
+  line-height: 32px;
+  text-align: center;
+}
+
+.month-btn:active {
+  background: #e2e8f0;
 }
 
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 12px 16px 80px;
 }
 
-.stat-card {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: white;
+.main-stats {
+  background: white;
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 0;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.stat-card.income {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+.stat-row {
+  display: flex;
+  justify-content: space-around;
 }
 
-.stat-card.expense {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.stat-card.balance {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+.stat-block {
+  flex: 1;
+  text-align: center;
 }
 
 .stat-label {
   font-size: 13px;
-  opacity: 0.9;
-  margin-bottom: 8px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+  display: block;
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
+  color: #1e293b;
+}
+
+.income-text {
+  color: #10b981;
+}
+
+.expense-text {
+  color: #ef4444;
+}
+
+.balance-text {
+  color: #f59e0b;
+}
+
+.stat-divider {
+  width: 1px;
+  background: #e2e8f0;
+  margin: 0 12px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  display: block;
+}
+
+.card-total {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.view-more {
+  font-size: 12px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+/* 资产卡片 */
+.asset-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.asset-item:last-child {
+  border-bottom: none;
+}
+
+.asset-icon {
+  font-size: 24px;
+  margin-right: 12px;
+  width: 40px;
+  text-align: center;
+}
+
+.asset-info {
+  flex: 1;
+}
+
+.asset-name {
+  display: block;
+  font-size: 14px;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.asset-bar {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.asset-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+}
+
+.asset-amount {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+  margin-left: 12px;
+}
+
+/* 分类统计 */
+.category-stat {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.category-stat:last-child {
+  border-bottom: none;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.category-name {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.category-amount {
+  font-weight: 600;
+  color: #ef4444;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.category-percentage {
+  font-size: 12px;
+  color: #94a3b8;
+  display: block;
+  text-align: right;
+}
+
+/* 列表项 */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-icon {
+  font-size: 20px;
+  width: 36px;
+  text-align: center;
+  margin-right: 12px;
+}
+
+.list-info {
+  flex: 1;
+}
+
+.list-title {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.list-desc {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.list-amount {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.list-amount.income {
+  color: #10b981;
+}
+
+.list-amount.expense {
+  color: #ef4444;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.empty-title {
+  font-size: 16px;
+  color: #475569;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.empty-desc {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* 按钮 */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }

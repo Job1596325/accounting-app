@@ -1,9 +1,7 @@
 <!--pages/list/list.wxml-->
 <view class="container">
-  <view class="content">
+  <scroll-view scroll-y="true" class="content">
     <view class="card">
-      <view class="card-title">交易明细</view>
-
       <!-- 筛选标签页 -->
       <view class="tabs">
         <view
@@ -18,34 +16,56 @@
           bindtap="filterTransactions"
           data-filter="income"
         >
-          收入
+          💰 收入
         </view>
         <view
           class="tab {{currentFilter === 'expense' ? 'active' : ''}}"
           bindtap="filterTransactions"
           data-filter="expense"
         >
-          支出
+          💸 支出
         </view>
+      </view>
+
+      <!-- 统计信息 -->
+      <view class="stats-info" wx:if="{{transactions.length > 0}}">
+        <text>共 {{transactions.length}} 笔 | 合计：¥{{totalAmount}}</text>
       </view>
 
       <!-- 交易列表 -->
       <block wx:if="{{transactions.length === 0}}">
         <view class="empty-state">
+          <view class="empty-icon">📋</view>
           <view class="empty-title">暂无交易记录</view>
+          <view class="empty-desc">快去记账吧</view>
         </view>
       </block>
 
       <block wx:else>
-        <view wx:for="{{transactions}}" wx:key="id" class="list-item">
-          <view class="list-icon">{{item.icon}}</view>
-          <view class="list-info">
-            <view class="list-title">{{item.categoryName}}</view>
-            <view class="list-desc">{{item.date}}{{item.note ? ' • ' + item.note : ''}}</view>
+        <!-- 按日期分组 -->
+        <view wx:for="{{groupedTransactions}}" wx:key="date" class="date-group">
+          <view class="date-header">
+            <text>{{item.date}}</text>
+            <text class="date-summary">收入¥{{item.income}} | 支出¥{{item.expense}}</text>
           </view>
-          <view class="list-amount {{item.type}}">{{item.type === 'income' ? '+' : '-'}}¥{{item.amount}}</view>
+          <view wx:for="{{item.transactions}}" wx:key="id" wx:for-item="trans" class="list-item">
+            <view class="list-left">
+              <view class="list-icon">{{trans.icon}}</view>
+              <view class="list-info">
+                <view class="list-title">{{trans.categoryName}}</view>
+                <view class="list-desc">{{trans.note ? trans.note : ''}}</view>
+              </view>
+            </view>
+            <view class="list-right">
+              <view class="list-amount {{trans.type}}">{{trans.type === 'income' ? '+' : '-'}}¥{{trans.amount}}</view>
+              <view class="list-actions">
+                <text class="action-btn" bindtap="editTransaction" data-id="{{trans.id}}">编辑</text>
+                <text class="action-btn delete" bindtap="deleteTransaction" data-id="{{trans.id}}">删除</text>
+              </view>
+            </view>
+          </view>
         </view>
       </block>
     </view>
-  </view>
+  </scroll-view>
 </view>
