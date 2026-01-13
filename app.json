@@ -4,8 +4,7 @@
     "pages/add/add",
     "pages/list/list",
     "pages/accounts/accounts",
-    "pages/report/report",
-    "pages/settings/settings"
+    "pages/report/report"
   ],
   "window": {
     "navigationBarBackgroundColor": "#1e293b",
@@ -23,33 +22,23 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "仪表板",
-        "iconPath": "images/dashboard.png",
-        "selectedIconPath": "images/dashboard-active.png"
+        "text": "📊 仪表板"
       },
       {
         "pagePath": "pages/add/add",
-        "text": "记账",
-        "iconPath": "images/add.png",
-        "selectedIconPath": "images/add-active.png"
+        "text": "✏️ 记账"
       },
       {
         "pagePath": "pages/list/list",
-        "text": "明细",
-        "iconPath": "images/list.png",
-        "selectedIconPath": "images/list-active.png"
+        "text": "📋 明细"
       },
       {
         "pagePath": "pages/accounts/accounts",
-        "text": "账户",
-        "iconPath": "images/accounts.png",
-        "selectedIconPath": "images/accounts-active.png"
+        "text": "🏦 账户"
       },
       {
         "pagePath": "pages/report/report",
-        "text": "报表",
-        "iconPath": "images/report.png",
-        "selectedIconPath": "images/report-active.png"
+        "text": "📈 报表"
       }
     ]
   },
